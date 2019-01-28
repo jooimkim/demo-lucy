@@ -1,24 +1,24 @@
 package com.example.demo;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import com.nhncorp.lucy.security.xss.XssSaxFilter;
 import org.junit.Test;
 
-import com.nhncorp.lucy.security.xss.XssSaxFilter;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class LucyTest {
 
 	@Test
 	public void xssEscapeTest() {
 		String dirty = "<script>alert('dirty');</script>";
-		String clean = XssSaxFilter.getInstance().doFilter(dirty).replace("<!-- Not Allowed Tag Filtered -->", "");
+
+		// IMG element는 허용하나 SRC attribute 안의 javascript는 검출함
+//		String dirty1 = "<IMG SRC=\"javascript:alert('XSS');\">";
+
+		String clean = XssSaxFilter.getInstance().doFilter(dirty);
 
 		System.out.println("dirty: " + dirty);
 		System.out.println("clean: " + clean);
 
 		assertThat(clean).isNotEqualTo(dirty);
-		assertThat(clean.contains("<")).isEqualTo(false);
-		assertThat(clean.contains(">")).isEqualTo(false);
-		assertThat(clean.contains("&lt;")).isEqualTo(true);
-		assertThat(clean.contains("&gt;")).isEqualTo(true);
 	}
 }
